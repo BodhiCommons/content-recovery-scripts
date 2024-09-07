@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "bodhi-content-recovery"
+version = "0.1.0"
+description = "Recover Bodhi content in a structured manner from Internet Archives, from the latest meaningful snapshot."
+authors = ["Pratheesh Prakash <pratheeshraniprakash@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+jupyterlab = "^4.2.5"
+internetarchive = "^4.1.0"
+wayback-machine-scraper = "^1.0.8"
+requests = "^2.32.3"
+beautifulsoup4 = "^4.12.3"
+pandas = "^2.2.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
