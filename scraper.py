@@ -1,6 +1,8 @@
 
 from pathlib import Path
 import requests
+import time
+
 from bs4 import BeautifulSoup as bs, NavigableString, Tag
 
 
@@ -65,6 +67,7 @@ class BodhiSnapShot:
                 self.__write_urls_to_file(page_number=page_number)
             except Exception as e:
                 print(e)
+        time.sleep(1)
 
 
 if __name__ == "__main__":
