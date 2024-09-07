@@ -1,4 +1,5 @@
 
+from pathlib import Path
 import requests
 from bs4 import BeautifulSoup as bs, NavigableString, Tag
 
@@ -41,13 +42,31 @@ class BodhiSnapShot:
                 self.article_urls.append(a_.attrs['href'])
 
 
+    def __write_urls_to_file(self, page_number: int) -> None:
+        """Append urls to file."""
+        with Path(f"page_{page_number}_urls.txt", "w+") as page_:
+            for article_url in self.article_urls:
+                page_.write_text(f"{article_url}\n")
+
+
     def __pageinate_url(self, page_number: int) -> None:
         self.web_archive_url = f"https://web.archive.org/web/{self.time_stamp}/{self.url}?page={page_number}"
 
 
     def scrape_urls(self) -> None:
-        self.fire_request()
-        self.make_soup()
-        self.find_main_block()
-        self.find_articles()
-        self.get_article_urls()
+        for page_number in range(0, 66):
+            self.__pageinate_url(page_number=page_number)
+            try:
+                self.fire_request()
+                self.make_soup()
+                self.find_main_block()
+                self.find_articles()
+                self.get_article_urls()
+                self.__write_urls_to_file(page_number=page_number)
+            except Exception as e:
+                print(e)
+
+
+if __name__ == "__main__":
+    bodhi_snapshot = BodhiSnapShot()
+    bodhi_snapshot.scrape_urls()
