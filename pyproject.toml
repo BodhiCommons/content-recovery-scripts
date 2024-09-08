@@ -13,8 +13,99 @@ wayback-machine-scraper = "^1.0.8"
 requests = "^2.32.3"
 beautifulsoup4 = "^4.12.3"
 pandas = "^2.2.2"
+ruff = "^0.6.4"
+refurb = "^2.0.0"
+bandit = "^1.7.9"
+mypy = "^1.11.2"
+types-requests = "^2.32.0.20240907"
+types-beautifulsoup4 = "^4.12.0.20240907"
+isort = "^5.13.2"
 
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "main.yml",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+    ".vscode",
+    ".pytest_cache",
+    "*/schema/",
+    "*/tests/*",
+    "test_*.py",
+]
+target-version = "py312"
+fix = true
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    "D203",
+    "D213",
+    "E402",
+    "SIM115",
+    "ANN101",
+    "C416",
+    "C419",
+    "DTZ011",
+    "FA102",
+    "CPY001",
+    "T201",
+    "ISC001",
+    "COM812",
+    "N813",
+]
+fixable = ["ALL"]
+unfixable = []
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+exclude = ["*.pyi"]
+
+[tool.ruff.lint.isort]
+case-sensitive = true
+
+[tool.ruff.lint.pylint]
+max-args = 10
+
+[tool.bandit]
+exclude_dirs = ["*/tests/*", "test_*",]
+
+[tool.mypy]
+exclude = [
+    "tests/",
+]
+
+[tool.refurb]
+enable_all = true
+python_version = "3.12"
+
+[tool.pytest.ini_options]
+minversion="8.0"
+console_output_style = "progress"
