@@ -81,7 +81,7 @@ class BodhiSnapShot:
 
     def scrape_urls(self) -> None:
         """Scrape urls."""
-        start_page = 19
+        start_page = 22
         end_page = 65
         for page_number in range(start_page, end_page + 1):
             self.__pageinate_url(page_number=page_number)
@@ -94,6 +94,9 @@ class BodhiSnapShot:
                 self.__write_urls_to_file(page_number=page_number)
             except requests.exceptions.RequestException as e:
                 print(e)
+            except TypeError:
+                print(f"Failed to find main block on page {page_number}.")
+                continue
         time.sleep(10)
 
 
