@@ -17,7 +17,7 @@ class PageSnapShot:
     def __init__(
         self,
         url_directory: str = "",
-        json_db_name: str = "backup.json",
+        json_db_name: str = "backup_beta.json",
     ) -> None:
         """Initialize bodhi snapshot."""
         self.headers: dict[str, str] = {
@@ -59,16 +59,16 @@ class PageSnapShot:
                 and "beta" in file_.name
             ):
                 article_urls: list[str] = file_.read_text().strip().split("\n")
+
                 self.article_urls.extend(article_urls)
 
     def __scrape_all_urls(self) -> None:
         """Scrape all urls."""
-#        articles_to_be_scraped: set[str] = {
-#            article
-#            for article in self.article_urls
-#            if article not in self.article_urls_in_db
-#        }
-        articles_to_be_scraped =["https://web.archive.org/web/20150223112607/http://beta.bodhicommons.org/article/about-vaccines-and-anti-vaccination-campaigns"]
+        articles_to_be_scraped: set[str] = {
+            article
+            for article in self.article_urls
+            if article not in self.article_urls_in_db
+        }
         total_articles: int = len(articles_to_be_scraped)
         for index, article_url in enumerate(articles_to_be_scraped, start=1):
             try:
@@ -98,7 +98,6 @@ class PageSnapShot:
                 self.__write_json_db_to_disk()
                 print(f"An error occurred: {e}. Restart application.")
                 print(f"url: {article_url}")
-            break
             time.sleep(30)
         self.__write_json_db_to_disk()
 
@@ -144,6 +143,9 @@ class PageSnapShot:
             str: Page authors.
 
         """
+        if self.soup_content== None:
+            message: str = "Soup object is empty."
+            raise TypeError(message)
         td_tags: list | None = self.soup_content.find_all("td")
         if len(td_tags)>1:
             authors_tag = td_tags[0]
@@ -161,6 +163,9 @@ class PageSnapShot:
             TypeError: If soup object is empty.
 
         """
+        if self.soup_content== None:
+            message: str = "Soup object is empty."
+            raise TypeError(message)
         image_tags = list(self.soup_content.find_all("img"))
         if isinstance(image_tags, list):
             images: list[str] = [image_tag.get("src") for image_tag in image_tags]
@@ -175,6 +180,9 @@ class PageSnapShot:
             list[str]: Page tags.
 
         """
+        if self.soup_content== None:
+            message: str = "Soup object is empty."
+            raise TypeError(message)
         td_tags: list = self.soup_content.find_all("td")
         if len(td_tags)>3:
             tags_tag=td_tags[-3]
@@ -198,7 +206,15 @@ class PageSnapShot:
         if self.soup_content== None:
             message: str = "Article body is empty."
             raise TypeError(message)
-        return self.soup_content.get_text()
+        #all table tags in self.soup_content contains non-article content. So removing them
+        table_tags: list = self.soup_content.find_all("table")
+        try:
+            for i in range(len(table_tags)):
+                self.soup_content.table.decompose()
+            return self.soup_content.get_text()
+        except:
+            return
+
 
 
     def get_published_date(self) -> str:
@@ -211,6 +227,9 @@ class PageSnapShot:
             TypeError: If soup object is empty.
 
         """
+        if self.soup_content== None:
+            message: str = "Soup object is empty."
+            raise TypeError(message)
         td_tags: list = self.soup_content.find_all("td")
         if len(td_tags)>2:
             date_tag= td_tags[1]
@@ -243,9 +262,9 @@ class PageSnapShot:
                 "authors": self.get_page_authors(),
                 "language": lang,
                 "tags": self.get_page_tags(),
-            #    "images": self.get_page_images(),
+                "images": self.get_page_images(),
                 "categories": self.get_page_tags(),
-                "article_content": self.get_article_body(),
+                "article_content": self.get_article_body(), # always fetch article content last as this function remove details such as author names, published date, categories etc.
             }
         except TypeError as e:
             print(article_url)
